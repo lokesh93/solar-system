@@ -31,6 +31,7 @@ GLuint loadTextureFromImage(Image* image) {
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
+	// Maps the image to the texture
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
 	return textureID;
 }
@@ -78,7 +79,7 @@ void drawScene() {
 
 	glutSwapBuffers();
 }
-
+// Calls the update function every 25 milliseconds
 void update(int value) {
 	_angle += 1.5f;
 	if (_angle > 360) {

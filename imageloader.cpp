@@ -21,12 +21,16 @@ Image::~Image(){
 
 }
 namespace {
+	// Converts a 4-character array to an integer
+	// little-endian form
 	int toInt(const char* bytes){
 		return (int) (((unsigned char)bytes[3] << 24) |
 			((unsigned char)bytes[2] << 16) |
 			((unsigned char)bytes[1] << 8) |
 			(unsigned char)bytes[0]);
 	}
+	// Reads the next 4 bytes as an integer
+	// little-endian form
 	int readInt(ifstream &input){
 		char buffer[4];
 		input.read(buffer, 4);
@@ -38,18 +42,18 @@ Image* loadBMP(const char* filename) {
 	ifstream infile(filename, ifstream::binary);
 	infile.seekg(10, std::ios::cur);
 	int dataOffset = readInt(infile);
-
+	// read the header
 	int headerSize = readInt(infile);
 	int width = readInt(infile);
 	int height = readInt(infile);
-
+	// read the data
 	int bytesPerRow = ((width * 3 + 3)/4)*4 - (width * 3 % 4);
 	int size = bytesPerRow * height;
 	char* pixels = new char[size];
 	infile.seekg(dataOffset, ios_base::beg);
 	infile.read(pixels, size);
 	infile.close();
-
+	// get the data into the correct format
 	char* pixels2 = new char[width * height * 3];
 	for(int y = 0; y < height; y++){
 		for(int x = 0; x < width; x++){
