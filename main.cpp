@@ -24,16 +24,24 @@ const float SIZE = 10.0f;
 #define M_PI (3.14159265)
 GLUquadricObj * sphere = NULL;
 
+
 float _angle = 0;
 GLuint _textureID;
 
 GLuint loadTextureFromImage(Image* image) {
 	GLuint textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glGenTextures(1, &textureID); // make room for texture
+	glBindTexture(GL_TEXTURE_2D, textureID); // tell OpenGL which texture to edit
 	// Maps the image to the texture
+	// GL_RGB -> format OpenGL uses for image
+	// image->width -> width
+	// image->height -> height
+	// second 0 -> image border
+	// second GL_RGB -> pixels are stored in RGB format
+	// GL_UNSIGNED_BYTE -> pixels are stored as unsighed numbers
+	// image-> pixels -> actual pixel data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
-	return textureID;
+	return textureID; // returns the texture id
 }
 
 void initRendering() {
@@ -45,7 +53,7 @@ void initRendering() {
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 
-	Image* img = loadBMP("earth.bmp");
+	Image* img = loadBMP("earth.bmp"); // load image file
 	_textureID = loadTextureFromImage(img);
 	delete img;
 
@@ -75,7 +83,7 @@ void drawScene() {
 	glTranslatef(0.0f, 0.0f, -20.0f);
 	glRotatef(_angle, 0, 1, 0);
 
-	gluSphere(sphere, 5.0, 20, 20);
+	gluSphere(sphere, 5.0, 20, 20); // draw the sphere
 
 	glutSwapBuffers();
 }
@@ -130,6 +138,8 @@ void keyboard(unsigned char key, int xIn, int yIn)
 	//flush out to single buffer
 	//glFlush();
 //}
+
+
 
 /* main function - program entry point */
 int main(int argc, char** argv)
