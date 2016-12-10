@@ -25,7 +25,10 @@ const float SIZE = 10.0f;
 GLUquadricObj * sphere = NULL;
 
 
-float _angle = 0;
+//float _angle = 0;
+float CurrentEarthRotation = 0.00;
+float EarthDaysTranspired = 0.00;
+float EarthDayIncrement = 0.01;
 GLuint _textureID;
 
 GLuint loadTextureFromImage(Image* image) {
@@ -44,7 +47,7 @@ GLuint loadTextureFromImage(Image* image) {
 	return textureID; // returns the texture id
 }
 
-void initRendering() {
+void initRendering(const char* imageName){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -53,7 +56,7 @@ void initRendering() {
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 
-	Image* img = loadBMP("earth.bmp"); // load image file
+	Image* img = loadBMP(imageName); // load image file
 	_textureID = loadTextureFromImage(img);
 	delete img;
 
@@ -79,22 +82,26 @@ void drawScene() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
+	glPushMatrix();
 	glTranslatef(0.0f, 0.0f, -20.0f);
-	glRotatef(_angle, 0, 1, 0);
+	glRotatef(-7, 0, 0, 1);
+	glRotatef(360*(EarthDaysTranspired/365),0,1,0);
+	glRotatef(360*CurrentEarthRotation, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
 
 	gluSphere(sphere, 5.0, 20, 20); // draw the sphere
-
+	glPopMatrix();
 	glutSwapBuffers();
 }
-// Calls the update function every 25 milliseconds
+// Calls the update function every 20 milliseconds
 void update(int value) {
-	_angle += 1.5f;
-	if (_angle > 360) {
-		_angle -= 360;
+	CurrentEarthRotation += EarthDayIncrement;
+	EarthDaysTranspired += EarthDayIncrement;
+	if(EarthDaysTranspired == 356){
+		EarthDaysTranspired = 0;
 	}
 	glutPostRedisplay();
-	glutTimerFunc(25, update, 0);
+	glutTimerFunc(20, update, 1);
 }
 
 //OpenGL functions
@@ -109,38 +116,6 @@ void keyboard(unsigned char key, int xIn, int yIn)
 	}
 }
 
-//void init(void)
-//{
-	//glClearColor(0, 0, 0, 0);
-	//glColor3f(1, 1, 1);
-
-	//glMatrixMode(GL_PROJECTION);
-	//glLoadIdentity();
-	//gluPerspective(45, 1, 1, 100);
-//}
-
-/* display function - GLUT display callback function
- *		clears the screen, sets the camera position, draws the ground plane and movable box
- */
-//void display(void)
-//{
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-	//glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
-
-	//gluLookAt(camPos[0], camPos[1], camPos[2], 0, 0, 0, 0,1,0);
-	//glColor3f(1,1,1);
-
-	////draw the teapot
-	//glutSolidTeapot(1);
-
-	//flush out to single buffer
-	//glFlush();
-//}
-
-
-
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
@@ -150,12 +125,12 @@ int main(int argc, char** argv)
 	glutInitWindowSize(400, 400);
 	glutInitWindowPosition(50, 50);
 
-	glutCreateWindow("EARTH");	//creates the window
-	initRendering();
+	glutCreateWindow("Planet");	//creates the window
+	initRendering("earth.bmp");
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(handleResize);
-	glutTimerFunc(25, update, 0);
+	glutTimerFunc(20, update, 0);
 
 	//glutDisplayFunc(display);	//registers "display" as the display callback function
 	glutKeyboardFunc(keyboard);
