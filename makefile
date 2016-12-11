@@ -25,7 +25,7 @@ else
 endif
 
 #change the 't1' name to the name you want to call your application
-PROGRAM_NAME= Earth
+PROGRAM_NAME= Solar_System
 
 #run target to compile and build, and then launch the executable
 run: $(PROGRAM_NAME)
